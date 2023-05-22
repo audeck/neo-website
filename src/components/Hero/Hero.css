@@ -1,0 +1,25 @@
+.Hero {
+  height: 100dvh;
+  color: white;
+
+  background-image: url('../../assets/hero-bg.jpg');
+  background-position: bottom center;
+  background-size: cover;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Hero-text {
+  width: min(80vw, 1200px);
+}
+
+.Hero-text h1 {
+  margin-bottom: 0;
+}
+
+.Hero-text h2 {
+  margin-left: 1em;
+  margin-top: .2em;
+}

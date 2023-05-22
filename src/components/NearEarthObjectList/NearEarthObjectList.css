@@ -1,0 +1,11 @@
+.NearEarthObjectList {
+  padding: 0;
+  background-color: inherit;
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.NearEarthObjectList p {
+  margin-top: 0;
+}

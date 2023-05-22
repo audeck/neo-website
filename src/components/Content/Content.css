@@ -1,0 +1,49 @@
+.Content {
+  color: white;
+  background-color: #010101;
+
+  text-align: center;
+
+  display: flex;
+  justify-content: center;
+
+  min-height: 100vh;
+}
+
+.Content-wrapper {
+  width: min(80vw, 1200px);
+}
+
+.Content header h1 {
+  margin: .3em 0;
+  font-size: 2.5em;
+}
+
+.Content button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.Content img {
+  scale: 240%;
+  filter: invert(79%) sepia(100%) saturate(0%) hue-rotate(146deg) brightness(113%) contrast(102%);
+}
+
+.Content .arrow-back {
+  transform: rotate(180deg);
+}
+
+.Content ul {
+  display: flex;
+  justify-content: center;
+}
+
+.Content header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  justify-content: space-evenly;
+}

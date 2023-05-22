@@ -1,0 +1,7 @@
+:root {
+  --accent-color: #eed79c;
+}
+
+span.accented {
+  color: var(--accent-color);
+}
