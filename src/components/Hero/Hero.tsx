@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { getDateFormatted, getDayOrdinal } from '../../utils/dates';
-import './Hero.css'
-import '../../global.css'
 import { fetchNeoData } from '../../api/neoApi';
 import { NeoObjectData } from '../../api/neoApi.types';
+import '../../global.css'
+import './Hero.css'
 
 export const Hero = () => {
+  const [neoCount, setNeoCount] = useState<number>();
+  const [isDangerousDay, setIsDangerousDay] = useState<boolean>(false);
+  
   const currentDate: Date = new Date();
   const day: string = getDayOrdinal(currentDate.getDate());
   const month: string = currentDate.toLocaleString('default', { month: 'long' });
   const year: number = currentDate.getFullYear();
-
-  const [neoCount, setNeoCount] = useState<number>();
-  const [isDangerousDay, setIsDangerousDay] = useState<boolean>(false);
 
   useEffect(() => {
     const dateFormatted = getDateFormatted('YYYY-MM-DD', currentDate);

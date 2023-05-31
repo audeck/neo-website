@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getDateFormatted } from '../../utils/dates';
 import NearEarthObject from '../NearEarthObject/NearEarthObject';
-import './NearEarthObjectList.css'
 import { NeoData } from '../../api/neoApi.types';
 import { fetchNeoData } from '../../api/neoApi';
+import './NearEarthObjectList.css'
 
 interface NearEarthObjectListProps {
   date: Date;
@@ -11,6 +11,7 @@ interface NearEarthObjectListProps {
 
 export const NearEarthObjectList = ({ date }: NearEarthObjectListProps) => {
   const [neoData, setNeoData] = useState<NeoData>({} as NeoData);
+  
   const dateFormatted = getDateFormatted('YYYY-MM-DD', date);
   const neoObjectsList = neoData.near_earth_objects;
   const neoObjects = neoObjectsList ? neoObjectsList[dateFormatted] : [];
