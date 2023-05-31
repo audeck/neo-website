@@ -1,25 +1,30 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { getDateFormatted } from '../../utils/dates';
 import NearEarthObject from '../NearEarthObject/NearEarthObject';
 import './NearEarthObjectList.css'
-import { NeoDataContext } from '../NeoDataProvider';
-import { NeoObjectData } from '../../api/neoApi';
+import { NeoData } from '../../api/neoApi.types';
+import { fetchNeoData } from '../../api/neoApi';
 
 interface NearEarthObjectListProps {
   date: Date;
 }
 
 export const NearEarthObjectList = ({ date }: NearEarthObjectListProps) => {
-  const [neoData] = useContext(NeoDataContext);
+  const [neoData, setNeoData] = useState<NeoData>({} as NeoData);
+  const dateFormatted = getDateFormatted('YYYY-MM-DD', date);
+  const neoObjectsList = neoData.near_earth_objects;
+  const neoObjects = neoObjectsList ? neoObjectsList[dateFormatted] : [];
 
-  if (neoData.loading) {
+  useEffect(() => {
+    fetchNeoData(date)
+      .then(data => setNeoData(data));
+  }, [date]);
+
+  if (!neoObjectsList || !(dateFormatted in neoObjectsList)) {
     // TODO: Loading UI
     console.log("Loading!");
     return <div>Loading!</div>
   }
-
-  const dateFormatted = getDateFormatted('YYYY-MM-DD', date);
-  const neoObjects = neoData.near_earth_objects![dateFormatted];
 
   return (
     <ul className='NearEarthObjectList'>

@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { NearEarthObjectList } from '../NearEarthObjectList/NearEarthObjectList';
-import { NeoDataContext } from '../NeoDataProvider';
 import arrow from '../../assets/nav-arrow.svg';
 import './Content.css';
 
@@ -8,7 +7,7 @@ import './Content.css';
 
 export const Content = () => {
   const [date, setDate] = useState(new Date());
-  const [neoData, updateNeoData] = useContext(NeoDataContext);
+  //const [neoData, updateNeoData] = useContext(NeoDataContext);
 
   const incrementDate = (): void => {
     changeDate(1);
@@ -22,7 +21,7 @@ export const Content = () => {
     const newDate: Date = new Date();
     newDate.setDate(date.getDate() + change);
     setDate(newDate);
-    updateNeoData(newDate);
+    //updateNeoData(newDate);
   }
 
   return (

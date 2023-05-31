@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { NeoData, fetchNeoData } from "../api/neoApi";
+import { fetchNeoData } from "../api/neoApi";
+import { NeoData } from "../api/neoApi.types";
 
 type NeoDataContextType = [
   neoData: NeoData,
@@ -7,36 +8,38 @@ type NeoDataContextType = [
 ]
 
 const initialNeoData: NeoDataContextType = [
-  { loading: true },
+  {} as NeoData,
   (newDate) => {},
 ]
 
 export const NeoDataContext = React.createContext<NeoDataContextType>(initialNeoData);
 
-interface NeoDataProviderProps {
-  children: React.ReactNode,
-}
+export {};
 
-export const NeoDataProvider = ({ children }: NeoDataProviderProps) => {
-  const [neoData, setNeoData] = useState<NeoData>({ loading: true });
+// interface NeoDataProviderProps {
+//   children: React.ReactNode,
+// }
 
-  const updateNeoData = (newDate: Date) => {
-    setNeoData( { loading: true });
-    fetchNeoData(newDate)
-      .then(data => {
-        console.log(data);
-        setNeoData(data);
-      })
-      .catch(err => console.error(`Error fetching NEO data: ${err}`));
-  }
+// export const NeoDataProvider = ({ children }: NeoDataProviderProps) => {
+//   const [neoData, setNeoData] = useState<NeoData>({ loading: true });
 
-  useEffect(() => {
-    updateNeoData(new Date());
-  }, [])
+//   const updateNeoData = (newDate: Date) => {
+//     setNeoData( { loading: true });
+//     fetchNeoData(newDate)
+//       .then(data => {
+//         console.log(data);
+//         setNeoData(data);
+//       })
+//       .catch(err => console.error(`Error fetching NEO data: ${err}`));
+//   }
 
-  return (
-    <NeoDataContext.Provider value={[neoData, updateNeoData ]}>
-      {children}
-    </NeoDataContext.Provider>
-  )
-}
+//   useEffect(() => {
+//     updateNeoData(new Date());
+//   }, [])
+
+//   return (
+//     <NeoDataContext.Provider value={[neoData, updateNeoData ]}>
+//       {children}
+//     </NeoDataContext.Provider>
+//   )
+// }
