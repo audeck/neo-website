@@ -1,19 +1,34 @@
 import React from 'react';
 import './NearEarthObject.css';
 import '../../global.css'
+import { NeoObjectData } from '../../api/neoApi.types';
 
 interface NearEarthObjectProps {
-  dangerous: boolean,
-  name: string,
-  diameterMin: number,
-  diameterMax: number,
-  speed: number,
-  missDateFull: string,
-  missDistance: number,
-  link: string,
+  object: NeoObjectData,
 }
 
-const NearEarthObject = ({ dangerous, name, diameterMin, diameterMax, speed, missDateFull, missDistance, link }: NearEarthObjectProps ) => {
+const NearEarthObject = ({ object }: NearEarthObjectProps) => {
+  const {
+    name,
+    is_potentially_hazardous_asteroid: dangerous,
+    nasa_jpl_url: link,
+    estimated_diameter: {
+      kilometers: {
+        estimated_diameter_min: diameterMin,
+        estimated_diameter_max: diameterMax,
+      }
+    },
+    close_approach_data: [{
+      close_approach_date_full: missDateFull,
+      miss_distance: {
+        kilometers: missDistance
+      },
+      relative_velocity: {
+        kilometers_per_second: speed,
+      }
+    }]
+  } = object;
+
   return (
     <a 
     href={link} 
