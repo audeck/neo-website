@@ -2,9 +2,9 @@
   height: 100dvh;
   color: white;
 
-  background-image: url('../../assets/hero-bg.jpg');
-  background-position: bottom center;
-  background-size: cover;
+  /* background-image: url('../../assets/hero-bg.jpg'); */
+  /* background-position: bottom center; */
+  /* background-size: cover; */
 
   display: flex;
   align-items: center;
