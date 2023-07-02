@@ -1,86 +1,118 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
+import { useWindowSize } from '../hooks/useWindowSize';
+import { findBestPoint } from '../utils/bestCandidateSampler';
+import { Point } from '../utils/geometry';
+import { Star, ShootingStar } from '../utils/canvasPainter.types';
+import { drawStar, drawShootingStar, resetShootingStar } from '../utils/canvasPainter';
 
-// var canvas = document.querySelector('canvas');
 
-// const canvas: HTMLCanvasElement = props => <canvas width={width} height={height} {...props}/>;
 
+// TODO: Make amount of stars dependant on window size.
+//       Add a parallax effect to background stars.
+//       Polish up shooting stars (trail, where they start+end, etc.).
 export const CanvasBackground = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-    const drawStar = (cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) => {
-        if (!contextRef.current) return;
-        const context = contextRef.current;
-
-        let rotation = Math.PI / 2 * 3;
-        const step = Math.PI / spikes;
-
-        context.strokeStyle = '#000';
-        context.beginPath();
-        context.moveTo(cx, cy - outerRadius);
-
-        for (let i = 0; i < spikes; i += 1) {
-            let x = cx + Math.cos(rotation) * outerRadius;
-            let y = cy + Math.sin(rotation) * outerRadius;
-
-            context.lineTo(x, y);
-            rotation += step;
-
-            x = cx + Math.cos(rotation) * innerRadius;
-            y = cy + Math.sin(rotation) * innerRadius;
-
-            context.lineTo(x, y);
-            rotation += step;
-        }
-
-        context.lineTo(cx, cy - outerRadius);
-        context.closePath();
-
-        context.lineWidth = 5;
-        context.strokeStyle = 'rgb(32, 66, 136)';
-        context.fillStyle = 'skyblue';
-
-        context.stroke();
-        context.fill();
-    }
+    const windowSize = useWindowSize();
+    const distributedPointsRef = useRef<Point[]>([]);
+    const starsRef = useRef<Star[]>([]);
+    const shootingStarsRef = useRef<ShootingStar[]>([]);
 
     const drawBackground = () => {
         if (!canvasRef.current || !contextRef.current) return;
+
         const canvas = canvasRef.current;
         const context = contextRef.current;
-        const body = document.body;
-        const html = document.documentElement;
 
-        const width = Math.max(
-            body.scrollWidth,
-            body.offsetWidth,
-            html.clientWidth,
-            html.scrollWidth,
-            html.offsetWidth,
-        );
+        context.fillStyle = '#050612';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
-        const height = Math.max(
-            body.scrollHeight,
-            body.offsetHeight,
-            html.clientHeight,
-            html.scrollHeight,
-            html.offsetHeight,
-        )
+    const drawStars = () => {
+        if (contextRef.current) {
+            const context = contextRef.current;
+            const stars = starsRef.current;
+            stars.forEach(star => drawStar(context, star));
+        }
+    }
 
-        canvas.width = width;
-        canvas.height = height;
+    const drawShootingStars = () => {
+        if (contextRef.current) {
+            const context = contextRef.current;
+            const shootingStars = shootingStarsRef.current;
+            shootingStars.forEach(star => drawShootingStar(context, star));
+        }
+    }
 
-        context.fillStyle = 'rgb(5, 6, 12)';
-        context.fillRect(0, 0, width, height);
+    // Populates the array references by `starsRef` with `amount` of Stars.
+    // Tries to distribute close to evenly using `findBestPoint`.
+    const populateStars = (amount: number) => {
+        const distributedPoints: Point[] = [];
+
+        for (let i = 0; i <= amount; i += 1) {
+            if (starsRef.current.length >= i) continue; // DEV
+            const bestLocation = findBestPoint(distributedPointsRef.current);
+            distributedPoints.push({ x: bestLocation.x, y: bestLocation.y });
+
+            starsRef.current.push({
+                cx: bestLocation.x,
+                cy: bestLocation.y,
+                rotation: Math.random() * 2 * Math.PI,
+                scale: Math.max(Math.random(), 0.5) / 7,
+            });
+        }
+    }
+
+    const populateShootingStars = (amount: number) => {
+        if (!canvasRef.current || !contextRef.current) return;
+
+        const canvas = canvasRef.current;
+        const context = contextRef.current as CanvasRenderingContext2D;
+
+        for (let i = 0; i < amount; i += 1) {
+            const shootingStar: ShootingStar = {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                dx: (Math.random() - 0.5) * 5,
+                dy: (Math.random() - 0.5) * 5,
+                r: (Math.random() * 2) + 1,
+                intervalId: setInterval(
+                    () => resetShootingStar(context, shootingStar),
+                    2500 * Math.random() + 2500,
+                ),
+            };
+            shootingStarsRef.current.push(shootingStar);
+        }
     }
 
     useEffect(() => {
-        if (canvasRef.current) {
-            contextRef.current = canvasRef.current.getContext('2d');
+        if (!canvasRef.current) return;
+        contextRef.current = canvasRef.current.getContext('2d');
+
+        populateStars(48);
+        populateShootingStars(2);
+
+        const animate = () => {
+            drawBackground();
+            drawStars();
+            drawShootingStars();
+            requestAnimationFrame(animate);
         }
 
-        drawBackground();
+        animate();
+
+        return () => shootingStarsRef.current.forEach(star => {
+            clearInterval(star.intervalId);
+        });
     }, []);
+
+    // Update canvas size on window resize
+    useEffect(() => {
+        if (!canvasRef.current || !windowSize.width || !windowSize.height) return;
+        canvasRef.current.width = windowSize.width;
+        canvasRef.current.height = windowSize.height;
+    }, [windowSize]);
 
     const style: CSSProperties = {
         position: 'fixed',
@@ -145,38 +177,6 @@ export const CanvasBackground = () => {
 //  
 // }
 //
-// function ShootingStar(x,y,dx,dy,radius,color){
-//  
-//   this.x = x;
-//   this.y = y;
-//   this.dx = dx;
-//   this.dy = dy;
-//   this.radius = radius;
-//   this.color = color;
-//
-//  
-//   this.draw = function(){
-//     c.beginPath();
-//     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
-//     c.closePath();
-//     c.fillStyle = this.color;
-//     c.fill();
-//   }
-//   this.update = function(){
-//     this.x += this.dx;
-//     this.y += this.dy;
-//     this.draw();
-//   }
-//   this.reset = function(){
-//     this.x = Math.random() * canvas.width;
-//     this.y = Math.random() * canvas.height;
-//     this.dx = (Math.random() - 0.5) * 10;
-//     this.dy = (Math.random() - 0.5) * 10;
-//     this.radius = (Math.random() * 2) + 1;
-//   }
-//  
-// }
-//
 // function Land(x,y,dx,landWidth,landLength){
 //  
 //   this.x = x;
@@ -224,40 +224,6 @@ export const CanvasBackground = () => {
 //
 //
 //
-// function Star(cx, cy, spikes, outerRadius, innerRadius) {
-//     this.rot = Math.PI / 2 * 3;
-//     this.x = cx;
-//     this.y = cy;
-//     this.spikes = spikes;
-//     this.outerRadius = outerRadius;
-//     this.innerRadius = innerRadius;
-//    
-//     this.step = Math.PI / this.spikes;
-//
-//     c.strokeSyle = "#000";
-//     c.beginPath();
-//     c.moveTo(cx, cy - this.outerRadius)
-//     for (i = 0; i < this.spikes; i++) {
-//         this.x = cx;
-//         this.y = cy;
-//         x = cx + Math.cos(this.rot) * this.outerRadius;
-//         y = cy + Math.sin(this.rot) * this.outerRadius;
-//         c.lineTo(x, y)
-//         this.rot += this.step
-//
-//         x = cx + Math.cos(this.rot) * this.innerRadius;
-//         y = cy + Math.sin(this.rot) * this.innerRadius;
-//         c.lineTo(x, y)
-//         this.rot += this.step
-//     }
-//     c.lineTo(cx, cy - this.outerRadius)
-//     c.closePath();
-//     c.lineWidth=5;
-//     c.strokeStyle='rgb(32, 66, 136)';
-//     c.stroke();
-//     c.fillStyle='skyblue';
-//     c.fill();
-// }
 //
 // //Initial object arrays
 // var earthWidth = 120;
@@ -265,13 +231,6 @@ export const CanvasBackground = () => {
 // var clouds = [{x: 20,y:10}];
 // var land = [{x: 20,y:10}];
 // var stars = [{x: 10,y:10}];
-//
-// function drawStars(a){
-//   for (var i = 0; i <= a; ++i) {
-//     var bestLocation = sample(stars);
-//     stars.push( new Star(bestLocation[0], bestLocation[1], 4, Math.floor(Math.random() * 4) + 2, 1));
-//   }
-// }
 //
 // function drawPlanets(a){
 //   for (var i = 0; i <= a; ++i) {
@@ -301,20 +260,6 @@ export const CanvasBackground = () => {
 //   }
 // }
 //
-// //Use best candidate algorithm to evenly distribute across the canvas
-// function sample(samples) {
-//   var bestCandidate, bestDistance = 0;
-//   for (var i = 0; i < 20; ++i) {
-//     var c = [Math.random() * canvas.width, Math.random() * canvas.height],
-//         d = distance(findClosest(samples, c), c);
-//     if (d > bestDistance) {
-//       bestDistance = d;
-//       bestCandidate = c;
-//     }
-//   }
-//   return bestCandidate;
-// }
-//
 // //Use best candidate algorithm to evenly distribute across the earth mask
 // function earthMask(samples) {
 //   var bestCandidate, bestDistance = 0;
@@ -331,48 +276,11 @@ export const CanvasBackground = () => {
 //   return bestCandidate;
 // }
 //
-// function distance(a, b) {
-//   var dx = a.x - b[0],
-//       dy = a.y - b[1];
-//   return Math.sqrt(dx * dx + dy * dy);
-// }
-//
-//
-// function findClosest(points, b) {
-//   var distance = null;
-//   var closestPoint;
-//   for (var i = 0; i < points.length; ++i) {
-//       var dx = points[i].x - b[0];
-//       var dy = points[i].y - b[1];
-//       if (distance == null) {
-//         distance = Math.sqrt(dx * dx + dy * dy);
-//         closestPoint = points[i];
-//       } else if(distance > Math.sqrt(dx * dx + dy * dy)){
-//         distance = Math.sqrt(dx * dx + dy * dy);
-//         closestPoint = points[i];
-//       }
-//   }
-//   return closestPoint;
-// }
-//
 // //Generate how many elements you want
 // //drawPlanets(50);
 // drawStars(20);
 // drawClouds(20);
 // drawLand(15);
-//
-// //Sloppy code for two randomly generated shooting stars
-// var shootingStar = new ShootingStar(10,10,8,8,2,'#2c62c2');
-// var shootingStar2 = new ShootingStar(400,300,-8,8,2,'#2c62c2');
-//
-// window.setInterval(resetShootingStar, 3000);
-// window.setInterval(resetShootingStar2, 5000);
-// function resetShootingStar() {
-//   shootingStar.reset();
-// }
-// function resetShootingStar2() {
-//   shootingStar2.reset();
-// }
 //
 // // Animate canvas
 // function animate(){

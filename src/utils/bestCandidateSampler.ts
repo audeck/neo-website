@@ -3,15 +3,17 @@ import { minDistance, Point } from "./geometry";
 // Uses the best candidate algorithm to find a point, which when
 // added to `points` makes the entire array deviate from a normal
 // distribution the least.
-export const findBestPoint = (points: Point[], maxWidth: number, maxHeight: number) => {
+export const findBestPoint = (points: Point[]) => {
     const ITERATIONS = 20;
-    let bestCandidate: Point = { x: maxWidth / 2, y: maxHeight / 2 };
+    let bestCandidate: Point = { x: Math.random(), y: Math.random() };
     let bestDistance = 0;
+
+    if (points.length == 0) return bestCandidate;
 
     for (let i = 0; i < ITERATIONS; i += 1) {
         let randomPoint = {
-            x: Math.random() * maxWidth,
-            y: Math.random() * maxHeight,
+            x: Math.random(),
+            y: Math.random(),
         };
         let randomDistance = minDistance(points, randomPoint);
 
