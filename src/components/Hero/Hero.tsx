@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getDateFormatted, getDayOrdinal } from '../../utils/dates';
 import { fetchNeoData } from '../../api/neoApi';
 import { NeoObjectData } from '../../api/neoApi.types';
+import { CanvasEarth } from '../CanvasEarth'
 import '../../global.css'
 import './Hero.css'
 
@@ -39,6 +40,7 @@ export const Hero = () => {
           There are <span className='accented'>{neoCount}</span> near-Earth objects passing by today. {isDangerousDay ? 'Scary!' : 'Safe!'}
         </h2>
       </div>
+      <CanvasEarth />
     </div>
   );
 }

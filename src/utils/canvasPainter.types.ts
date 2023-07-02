@@ -14,3 +14,25 @@ export type Star = {
     scale: number,
 }
 
+export type Circle = {
+    x: number,
+    y: number,
+    r: number,
+    color: string,
+}
+
+export type SemiCircle = Circle;
+
+export type EarthFeature = {
+    x: number,
+    y: number,
+    dx: number,
+    width: number,
+    length: number,
+    color: string,
+}
+
+export type Cloud = EarthFeature;
+
+export type Land = EarthFeature;
+
