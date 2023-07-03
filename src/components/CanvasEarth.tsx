@@ -4,6 +4,13 @@ import { drawCircle, drawCloud, drawLand } from '../utils/canvasPainter';
 import { Point } from '../utils/geometry';
 import { findBestPoint } from "../utils/bestCandidateSampler";
 
+
+
+/**
+ * A canvas component that draws an animated Earth in "Kurzgesagt" style.
+ * The actual contents scale to 100% of the canvas DOM size, meaning
+ * styling with CSS is both easy and encouraged.
+ */
 export const CanvasEarth = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);

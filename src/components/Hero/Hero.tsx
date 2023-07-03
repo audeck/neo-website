@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { getDateFormatted, getDayOrdinal } from '../../utils/dates';
 import { fetchNeoData } from '../../api/neoApi';
 import { NeoObjectData } from '../../api/neoApi.types';
-import { CanvasEarth } from '../CanvasEarth'
-import '../../global.css'
-import './Hero.css'
+import { CanvasEarth } from '../CanvasEarth';
+import { Header } from '../Header';
+import '../../global.css';
+import './Hero.css';
 
 export const Hero = () => {
   const [neoCount, setNeoCount] = useState<number>();
@@ -30,7 +31,8 @@ export const Hero = () => {
       });
   }, []);
 
-  return (
+  return <>
+    <Header />
     <div className='Hero'>
       <div className='Hero-text'>
         <h1>
@@ -42,5 +44,5 @@ export const Hero = () => {
       </div>
       <CanvasEarth />
     </div>
-  );
+  </>;
 }

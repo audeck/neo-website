@@ -7,7 +7,6 @@ import './Content.css';
 
 export const Content = () => {
   const [date, setDate] = useState(new Date());
-  //const [neoData, updateNeoData] = useContext(NeoDataContext);
 
   const incrementDate = (): void => {
     changeDate(1);
@@ -21,7 +20,6 @@ export const Content = () => {
     const newDate: Date = new Date();
     newDate.setDate(date.getDate() + change);
     setDate(newDate);
-    //updateNeoData(newDate);
   }
 
   return (
